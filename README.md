@@ -82,3 +82,12 @@ This was written to test the limits of C's macro system as well as my own unders
 While it seems to work in the limited tests that I ran on it, it should by no means be considered highly stable.
 
 Enjoy!
+
+
+Attribution
+=============
+
+I want to thank DSMan195276 [whose post on Reddit](https://www.reddit.com/r/C_Programming/comments/6o7kpb/raii_in_c_cleanup_gcc_compiler_extension/dkgzztq/) I came across,
+which taught me most of the macro-twiddling strategies used in this library.
+
+He has since pointed me to this marvellous resource, which explains a lot of these techniques in more detail: https://www.chiark.greenend.org.uk/%7Esgtatham/mp/
