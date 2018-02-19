@@ -1,7 +1,3 @@
-#ifndef EXCEPTIONAL_H_
-#define EXCEPTIONAL_H_
-
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -128,5 +124,3 @@ extern int __Exceptional_try_block_nesting_count;
     }                                                 \
     longjmp(__Exceptional_env, exception);            \
   } while (0)                                         \
-
-#endif //EXCEPTIONAL_H_

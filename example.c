@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "exceptional.h"
+#include "exceptional/exceptional.h"
 
 int main(){
   int foo = 0;
