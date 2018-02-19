@@ -34,6 +34,8 @@ Do note:
 Demystifying the Black Magic:
 ====================================
 
+_For a more gradual introduction to these concepts, read ['Metaprogramming custom control structures in C'](https://www.chiark.greenend.org.uk/%7Esgtatham/mp/) by Simon Tatham, which is really good!_
+
 1. We want someone to be able to pass a block or single-statement after writing the macro. This means the macro should
   a) finish with an `if(true)`
   b) Since we want to do something after this block has returned, it should be inside of a loop.
