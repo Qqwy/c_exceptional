@@ -34,45 +34,45 @@ Do note:
 Demystifying the Black Magic:
 ====================================
 
-    1. We want someone to be able to pass a block or single-statement after writing the macro. This means the macro should
-      a) finish with an `if(true)`
-      b) Since we want to do something after this block has returned, it should be inside of a loop.
-      c) To make sure that the stuff afterwards is only run _after_ the block, we need to make sure that the invariant is different when the loop is run for the second time.
-        An example:
-        ```C
-        for(int var = 0;var < 2; ++i)
-          if(var == 1) {
-            //stuff to run afterwards
-          } else
-        ```
-    2. This also means that we cannot introduce any construct that ends with a `}` ourselves.
-      - If we want to run multiple lines of code, use:
-      ```C
-      if(1){
-        // your code
-        goto label;
-      } else
-        label:
-        //Continue statements that do not end with `}` here.
-      ```
-    3. Unfortunately, that construct does not allow us to introduce new variables, because they would only exist inside the `if`'s body-scope.
-    But we can start a for-loop and use its initializer to create a new variable;
-    4. This however does mean that we either need a clever way to make sure the for-loop stops, or we need to have a final 'finishing' section at the very top:
+1. We want someone to be able to pass a block or single-statement after writing the macro. This means the macro should
+  a) finish with an `if(true)`
+  b) Since we want to do something after this block has returned, it should be inside of a loop.
+  c) To make sure that the stuff afterwards is only run _after_ the block, we need to make sure that the invariant is different when the loop is run for the second time.
+    An example:
     ```C
-      while(1)
-        if(0) {
-          finished_label:
-          break;
-        } else
-          for(int some_var;;)
-            for(int some_other_var;;)
-              // with at some point inside a nested for-loop:
-                if(something_only_true_when_user_code_already_ran)
-                  goto finished_label;
+    for(int var = 0;var < 2; ++i)
+      if(var == 1) {
+        //stuff to run afterwards
+      } else
     ```
+2. This also means that we cannot introduce any construct that ends with a `}` ourselves.
+  - If we want to run multiple lines of code, use:
+  ```C
+  if(1){
+    // your code
+    goto label;
+  } else
+    label:
+    //Continue statements that do not end with `}` here.
+  ```
+3. Unfortunately, that construct does not allow us to introduce new variables, because they would only exist inside the `if`'s body-scope.
+But we can start a for-loop and use its initializer to create a new variable;
+4. This however does mean that we either need a clever way to make sure the for-loop stops, or we need to have a final 'finishing' section at the very top:
+```C
+  while(1)
+    if(0) {
+      finished_label:
+      break;
+    } else
+      for(int some_var;;)
+        for(int some_other_var;;)
+          // with at some point inside a nested for-loop:
+            if(something_only_true_when_user_code_already_ran)
+              goto finished_label;
+```
 
-    5. To ensure that the macro can be used in multiple locations, we need to make our lables unique.
-      For this, the `LINE_LABEL(name, __LINE__)` macro is used.
+5. To ensure that the macro can be used in multiple locations, we need to make our lables unique.
+  For this, the `LINE_LABEL(name, __LINE__)` macro is used.
 
 Disclaimer
 ============
