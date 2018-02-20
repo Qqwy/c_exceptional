@@ -91,7 +91,7 @@ extern int __Exceptional_try_block_nesting_count;
                   goto LINE_LABEL(__try_body_second_half, __LINE__);    \
                 } else                                                  \
                 LINE_LABEL(__try_body_second_half, __LINE__):           \
-                  for(__Exceptional_exception_code = setjmp(__Exceptional_env); __Exceptional_exception_block_dispatcher < 2; ++__Exceptional_exception_block_dispatcher) \
+                  for(__Exceptional_exception_code = setjmp(__Exceptional_env); __Exceptional_exception_block_dispatcher < 3; ++__Exceptional_exception_block_dispatcher) \
                     if(__Exceptional_exception_code == 0 && __Exceptional_exception_block_dispatcher == 0)
 
 /*
@@ -101,8 +101,8 @@ extern int __Exceptional_try_block_nesting_count;
   The inline `memcpy` is here to ensure that even if we jump out of a `catch`-block, the exception state is still returned to its old version.
 */
 #define catch(exception) else                                           \
-    for(int exception = __Exceptional_exception_code; __Exceptional_exception_block_dispatcher < 2; ++__Exceptional_exception_block_dispatcher) \
-      if(__Exceptional_exception_code && __Exceptional_exception_block_dispatcher == 0 && memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf))) \
+    for(int exception = __Exceptional_exception_code; __Exceptional_exception_block_dispatcher < 3; ++__Exceptional_exception_block_dispatcher) \
+      if(__Exceptional_exception_code && __Exceptional_exception_block_dispatcher == 1 && memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf)))
 
 
 /*
@@ -111,7 +111,7 @@ extern int __Exceptional_try_block_nesting_count;
 
   The inline `memcpy` is here to ensure that even if we jump out of a `finally`-block (like when re-throwing), the exception state is still returned to its old version.
 */
-#define finally else if(++__Exceptional_exception_block_dispatcher && memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf)))
+#define finally else if(__Exceptional_exception_block_dispatcher == 2 && memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf)))
 
 /*
   Throws an exception by using `longjmp`.
@@ -123,4 +123,4 @@ extern int __Exceptional_try_block_nesting_count;
       exit(EXIT_FAILURE);                             \
     }                                                 \
     longjmp(__Exceptional_env, exception);            \
-  } while (0)                                         \
+  } while (0)
