@@ -1,3 +1,7 @@
+#ifndef EXCEPTIONAL_H_
+#define EXCEPTIONAL_H_
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -72,27 +76,25 @@ extern int __Exceptional_try_block_nesting_count;
       break;                                                            \
     } else                                                              \
       for(jmp_buf __Exceptional_env_backup;;)                           \
-        if(0) {                                                         \
-        LINE_LABEL(__try_block_unwind, __LINE__):                       \
-          --__Exceptional_try_block_nesting_count;                      \
-          memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf)); \
-          fprintf(stderr,"Unwinding stack: %p\n", &__Exceptional_env_backup); \
-          goto LINE_LABEL(__try_block_finished, __LINE__);              \
-        }else                                                           \
-          for(int __Exceptional_exception_code = 0;;)                   \
-            for(int __Exceptional_exception_block_dispatcher = 0;;)     \
-              while(1)                                                  \
-                if(__Exceptional_exception_block_dispatcher)            \
-                  goto LINE_LABEL(__try_block_unwind, __LINE__);        \
-                else if(1){                                             \
-                  fprintf(stderr,"  Winding stack: %p\n", &__Exceptional_env_backup); \
-                  memcpy(__Exceptional_env_backup, __Exceptional_env, sizeof(jmp_buf)); \
-                  ++__Exceptional_try_block_nesting_count;              \
-                  goto LINE_LABEL(__try_body_second_half, __LINE__);    \
-                } else                                                  \
-                LINE_LABEL(__try_body_second_half, __LINE__):           \
-                  for(__Exceptional_exception_code = setjmp(__Exceptional_env); __Exceptional_exception_block_dispatcher < 3; ++__Exceptional_exception_block_dispatcher) \
-                    if(__Exceptional_exception_code == 0 && __Exceptional_exception_block_dispatcher == 0)
+        for(int __Exceptional_exception_code = 0;;)                     \
+          for(int __Exceptional_exception_block_dispatcher = 0;;)       \
+            while(1)                                                    \
+              if(__Exceptional_exception_block_dispatcher)              \
+                goto LINE_LABEL(__try_block_finished, __LINE__);        \
+              else if(1){                                               \
+                fprintf(stderr,"  Winding stack: %p\n", &__Exceptional_env_backup); \
+                memcpy(__Exceptional_env_backup, __Exceptional_env, sizeof(jmp_buf)); \
+                ++__Exceptional_try_block_nesting_count;                \
+                goto LINE_LABEL(__try_body_second_half, __LINE__);      \
+              } else                                                    \
+              LINE_LABEL(__try_body_second_half, __LINE__):             \
+                for(__Exceptional_exception_code = setjmp(__Exceptional_env); __Exceptional_exception_block_dispatcher < 4; ++__Exceptional_exception_block_dispatcher) \
+                  if(__Exceptional_exception_block_dispatcher == 1){    \
+                    /* Run after `try` finished or `throw` happened (before `catch` or `finally`) */ \
+                    memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf)); \
+                    fprintf(stderr,"Unwinding stack: %p\n", &__Exceptional_env_backup); \
+                  } else if(__Exceptional_exception_block_dispatcher == 0 && __Exceptional_exception_code == 0) \
+                    /* user-provided block here. Runs first*/
 
 /*
   This block is only executed if we returned from a `longjmp` (thrown by `throw`) previously.
@@ -101,8 +103,9 @@ extern int __Exceptional_try_block_nesting_count;
   The inline `memcpy` is here to ensure that even if we jump out of a `catch`-block, the exception state is still returned to its old version.
 */
 #define catch(exception) else                                           \
-    for(int exception = __Exceptional_exception_code; __Exceptional_exception_block_dispatcher < 3; ++__Exceptional_exception_block_dispatcher) \
-      if(__Exceptional_exception_code && __Exceptional_exception_block_dispatcher == 1 && memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf)))
+    for(int exception = __Exceptional_exception_code; __Exceptional_exception_block_dispatcher > 1 && __Exceptional_exception_block_dispatcher < 4; ++__Exceptional_exception_block_dispatcher) \
+      if(__Exceptional_exception_block_dispatcher == 2 && __Exceptional_exception_code) \
+        /* user-provided block here. Runs when exception was thrown. */
 
 
 /*
@@ -111,7 +114,8 @@ extern int __Exceptional_try_block_nesting_count;
 
   The inline `memcpy` is here to ensure that even if we jump out of a `finally`-block (like when re-throwing), the exception state is still returned to its old version.
 */
-#define finally else if(__Exceptional_exception_block_dispatcher == 2 && memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf)))
+#define finally else if(__Exceptional_exception_block_dispatcher == 3) \
+  /* user-provided block here. Runs regardless of if exception was thrown. */
 
 /*
   Throws an exception by using `longjmp`.
@@ -123,4 +127,9 @@ extern int __Exceptional_try_block_nesting_count;
       exit(EXIT_FAILURE);                             \
     }                                                 \
     longjmp(__Exceptional_env, exception);            \
-  } while (0)
+  } while (0)                                         \
+
+#define rethrow throw(__Exceptional_exception_code)
+
+
+#endif //EXCEPTIONAL_H_
