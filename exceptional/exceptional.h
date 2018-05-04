@@ -109,13 +109,12 @@ extern int _Exceptional_try_block_nesting_count;
   This block is only executed if we returned from a `longjmp` (thrown by `throw`) previously.
 
   The `for`-construct exists in here to ensure that a finally-block will be run if it is added at the end.
-  The inline `memcpy` is here to ensure that even if we jump out of a `catch`-block (like when re-throwing), the exception state is still returned to its original version.
 */
 #define catch(exception) else                                           \
     for(int _Exceptional_rethrown_exception_code = 0; _Exceptional_exception_block_dispatcher < 3;) \
       for(int exception = _Exceptional_exception_code; _Exceptional_exception_block_dispatcher < 3; ++_Exceptional_exception_block_dispatcher) \
         if(_Exceptional_exception_block_dispatcher % 2 == 0 /* zero or two */) { \
-          if(_Exceptional_exception_code && _Exceptional_exception_block_dispatcher == 0 && memcpy(_Exceptional_env, _Exceptional_env_backup, sizeof(jmp_buf))) { \
+          if(_Exceptional_exception_code && _Exceptional_exception_block_dispatcher == 0) { \
             _Exceptional_debug_print("Winding catch stack: %p\n", &_Exceptional_env_backup); \
             _Exceptional_rethrown_exception_code = setjmp(_Exceptional_env); \
             if(!_Exceptional_rethrown_exception_code) {                 \
