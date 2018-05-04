@@ -112,29 +112,25 @@ extern int _Exceptional_try_block_nesting_count;
   The inline `memcpy` is here to ensure that even if we jump out of a `catch`-block (like when re-throwing), the exception state is still returned to its original version.
 */
 #define catch(exception) else                                           \
-    for(jmp_buf _Exceptional_env_catch_backup; _Exceptional_exception_block_dispatcher < 3;) \
-      for(int _Exceptional_rethrown_exception_code = 0; _Exceptional_exception_block_dispatcher < 3;) \
-        for(int exception = _Exceptional_exception_code; _Exceptional_exception_block_dispatcher < 3; ++_Exceptional_exception_block_dispatcher) \
-          if(_Exceptional_exception_block_dispatcher % 2 == 0) { \
-            if(_Exceptional_exception_code && _Exceptional_exception_block_dispatcher == 2){ \
-              _Exceptional_debug_print("Unwinding catch stack: %p\n", &_Exceptional_env_catch_backup); \
-              memcpy(_Exceptional_env, _Exceptional_env_catch_backup, sizeof(jmp_buf)); \
-              if(_Exceptional_rethrown_exception_code){                 \
-                _Exceptional_debug_print("Re-throwing error %d after finally block was run\n", _Exceptional_rethrown_exception_code); \
-                throw(_Exceptional_rethrown_exception_code);            \
-              }                                                         \
-            } else if(_Exceptional_exception_code && _Exceptional_exception_block_dispatcher == 0 && memcpy(_Exceptional_env, _Exceptional_env_backup, sizeof(jmp_buf))) { \
-                _Exceptional_debug_print("Winding catch stack: %p\n", &_Exceptional_env_catch_backup); \
-                memcpy(_Exceptional_env_catch_backup, _Exceptional_env, sizeof(jmp_buf)); \
-                _Exceptional_rethrown_exception_code = setjmp(_Exceptional_env); \
-                if(_Exceptional_rethrown_exception_code){               \
-                  _Exceptional_rethrown_exception_code = _Exceptional_rethrown_exception_code; \
-                }else {                                                 \
-                  goto _Exceptional_LINE_LABEL(catch_body, __LINE__);   \
-                }                                                       \
-              }                                                         \
-          } else if(0)                                                   \
-              _Exceptional_LINE_LABEL(catch_body, __LINE__):
+    for(int _Exceptional_rethrown_exception_code = 0; _Exceptional_exception_block_dispatcher < 3;) \
+      for(int exception = _Exceptional_exception_code; _Exceptional_exception_block_dispatcher < 3; ++_Exceptional_exception_block_dispatcher) \
+        if(_Exceptional_exception_block_dispatcher % 2 == 0 /* zero or two */) { \
+          if(_Exceptional_exception_code && _Exceptional_exception_block_dispatcher == 0 && memcpy(_Exceptional_env, _Exceptional_env_backup, sizeof(jmp_buf))) { \
+            _Exceptional_debug_print("Winding catch stack: %p\n", &_Exceptional_env_backup); \
+            _Exceptional_rethrown_exception_code = setjmp(_Exceptional_env); \
+            if(!_Exceptional_rethrown_exception_code) {                 \
+              goto _Exceptional_LINE_LABEL(catch_body, __LINE__);       \
+            }                                                           \
+          }else if(_Exceptional_exception_code && _Exceptional_exception_block_dispatcher == 2){ \
+            _Exceptional_debug_print("Unwinding catch stack: %p\n", &_Exceptional_env_backup); \
+            memcpy(_Exceptional_env, _Exceptional_env_backup, sizeof(jmp_buf)); \
+            if(_Exceptional_rethrown_exception_code){                   \
+              _Exceptional_debug_print("Re-throwing error %d after finally block was run\n", _Exceptional_rethrown_exception_code); \
+              throw(_Exceptional_rethrown_exception_code);              \
+            }                                                           \
+          }                                                             \
+        } else if(0)                                                    \
+        _Exceptional_LINE_LABEL(catch_body, __LINE__):
 
 /*
   Increments the dispatcher to ensure that the finally-block is never executed more than once in a row,
