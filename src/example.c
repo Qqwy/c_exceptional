@@ -3,8 +3,6 @@
 #include "exceptional/exceptional.h"
 
 int main(){
-  int foo = 0;
-
   printf("-> Simple try/finally without raise\n");
   try {
     printf("Inside try\n");
