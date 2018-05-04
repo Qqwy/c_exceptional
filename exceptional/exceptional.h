@@ -1,3 +1,7 @@
+#ifndef EXCEPTIONAL_H_
+#define EXCEPTIONAL_H_
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -153,3 +157,7 @@ extern int _Exceptional_try_block_nesting_count;
   } while (0)                                         \
 
 
+#define rethrow throw(__Exceptional_exception_code)
+
+
+#endif //EXCEPTIONAL_H_
