@@ -24,7 +24,7 @@ int main(){
   printf("-> Simple try/catch without raise\n");
   try {
     printf("Inside try\n");
-  } catch2(err) {
+  } catch(err) {
     printf("Catch: Should not be run, but was run with error code: %d\n", err);
   }
 
@@ -39,7 +39,7 @@ int main(){
   printf("-> Simple try/catch/finally without raise\n");
   try {
     printf("Inside try\n");
-  } catch2(err) {
+  } catch(err) {
     printf("Catch: Should not be run, but was run with error code: %d\n", err);
   } finally {
     printf("Finally: Should be run after try\n");
@@ -49,7 +49,7 @@ int main(){
   try {
     printf("Inside try\n");
     throw(42);
-  } catch2(err) {
+  } catch(err) {
     printf("Catch: Should be run, thrown error code: %d\n", err);
   } finally {
     printf("Finally: Should be run after catch\n");
@@ -62,13 +62,13 @@ int main(){
     try {
       printf("Inside inner try\n");
       throw(42);
-    } catch2(inner_err) {
+    } catch(inner_err) {
       printf("Inner Catch: Should be run, thrown error code: %d\n", inner_err);
     } finally {
       printf("Inner finally: Should be run after inner catch\n");
     }
     printf("End of outer try\n");
-  } catch2(err) {
+  } catch(err) {
     printf("Outer Catch: Should not be run, thrown error code: %d\n", err);
   } finally {
     printf("Outer Finally: Should be run after outer try\n");
@@ -80,14 +80,14 @@ int main(){
     try {
       printf("Inside inner try\n");
       throw(42);
-    } catch2(inner_err) {
+    } catch(inner_err) {
       printf("Inner Catch: Should be run, thrown error code: %d\n", inner_err);
       throw(inner_err);
       printf("Inner Catch: Should not be run");
     } finally {
       printf("Inner finally: Should be run after inner catch\n");
     }
-  } catch2(err) {
+  } catch(err) {
     printf("Outer Catch: Should be run, thrown error code: %d\n", err);
   } finally {
     printf("Outer Finally: Should be run after outer catch\n");
