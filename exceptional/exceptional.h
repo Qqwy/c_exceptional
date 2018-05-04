@@ -98,7 +98,7 @@ extern int __Exceptional_try_block_nesting_count;
   This block is only executed if we returned from a `longjmp` (thrown by `throw`) previously.
 
   The `for`-construct exists in here to ensure that a finally-block will be run if it is added at the end.
-  The inline `memcpy` is here to ensure that even if we jump out of a `catch`-block, the exception state is still returned to its old version.
+  The inline `memcpy` is here to ensure that even if we jump out of a `catch`-block (like when re-throwing), the exception state is still returned to its original version.
 */
 #define catch(exception) else                                           \
     for(int exception = __Exceptional_exception_code; __Exceptional_exception_block_dispatcher < 2; ++__Exceptional_exception_block_dispatcher) \
@@ -109,7 +109,7 @@ extern int __Exceptional_try_block_nesting_count;
   Increments the dispatcher to ensure that the finally-block is never executed more than once in a row,
   regardless of whether a `catch`-block exists or not.
 
-  The inline `memcpy` is here to ensure that even if we jump out of a `finally`-block (like when re-throwing), the exception state is still returned to its old version.
+  The inline `memcpy` is here to ensure that even if we jump out of a `finally`-block (like when re-throwing), the exception state is still returned to its original version.
 */
 #define finally else if(++__Exceptional_exception_block_dispatcher && memcpy(__Exceptional_env, __Exceptional_env_backup, sizeof(jmp_buf)))
 
