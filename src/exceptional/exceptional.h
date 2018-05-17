@@ -1,15 +1,14 @@
 #ifndef EXCEPTIONAL_H_
 #define EXCEPTIONAL_H_
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <setjmp.h>
 
-// Set this to '1' to print debug information about stack winding/unwinding.
-#if DEBUG_EXCEPTIONAL
+// Define this to print debug information about stack winding/unwinding.
+#ifdef DEBUG_EXCEPTIONAL
   #define _Exceptional_debug_print(...) fprintf(stderr, "Exceptional: " __VA_ARGS__);
 #else
   #define _Exceptional_debug_print(...) ;
