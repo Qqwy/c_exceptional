@@ -22,3 +22,4 @@ test:
 		echo $${target_filename} ; \
 		$(CC) $(CFLAGS) $(DEBUGFLAGS) $(ALL_LIB_SOURCES) $$f -o $${target_filename} ; \
 	done
+	urchin test;

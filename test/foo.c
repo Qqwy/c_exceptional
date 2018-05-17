@@ -1,6 +1,8 @@
-#include "../src/exceptional/exceptional.h"
 #include <stdio.h>
+#include <stdbool.h>
+#include <assert.h>
 
-int main(int arc, char **argv) {
+int main(int argc, char** argv) {
 	printf("Hello, world!\n");
+  assert(false);
 }
