@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "this is my example"
+echo "foo"
+echo "bar"
+exit 0
