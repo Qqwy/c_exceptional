@@ -18,6 +18,7 @@ production:
 .PHONY: test
 test:
 	for f in `find ./test/*.c` ; do \
-		echo $$f ; \
-		# $(CC) $(CFLAGS) $(DEBUGFLAGS) $(ALL_LIB_SOURCES) -o $(basename .c "$$f") ; \
+		target_filename=`dirname $$f`/`basename -s .c $$f` ; \
+		echo $${target_filename} ; \
+		$(CC) $(CFLAGS) $(DEBUGFLAGS) $(ALL_LIB_SOURCES) $$f -o $${target_filename} ; \
 	done
