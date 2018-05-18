@@ -5,7 +5,7 @@ A simple Exception-handling library for C99 and up, that uses some fancy macros 
 
 First, include `exceptional/exceptional.h` in your code.
 
-Then, use the `try` macro (combined with `catch` and/or possibly `finally`) to guard against errors. 
+Then, use the `try { ... }` macro (combined with `catch { ... }` and/or possibly `finally { ... }`) to guard against errors. 
 
 Implemented using Wonderful Black Ma(cro)gic. It is written in this convoluted style to ensure that you can use the following syntax:
 
@@ -22,16 +22,32 @@ try {
 }
 ```
 
-Do note:
+## Usage Notes:
 
-- Don't use return statements inside this block, because it will forego the cleanup of the exception state.
-- When re-throwing from within `catch`, the `finally`-block will currently _not_ run. So instead, re-throw from within the finally-block (or after the try has finished), if required.
-
+- Don't use return statements inside a `try`, `catch` or `finally` block, because it will forego the proper cleanup of the exception state.
+- When altering a variable that was introduced in the same function but outside the `try/catch/finally` block, be sure it is marked as `volatile`. This is because Exceptional is implemented using `setjmp`+`longjmp`, which might clobber the variables' values unless they were marked like this. (While `gcc` and other common comilers seem to do the right thing even when `volatile` was not used, you should not depend on it).
+- Re-throwing from within a catch-block now is fully supported! (**Hooray!**) The related finally block will be run first before bubbling the exception up the stack.
 
 **Truly exceptional, isn't it?**
 
 
-Demystifying the Black Magic:
+# Running Tests
+
+1. Clone or download the repository.
+2. Make sure that besides `gcc` you have `nodejs` and the node package manager (`npm`) installed on your system, because tests are run using the tool `urchin`.
+2. Run `make test`. This will:
+  - auto-install `urchin` if it was not installed yet, 
+  - Compile and link all C-files in the `/test` folder
+  - Run `urchin` on these executables. Urchin tests are successful if the exit code of the executable == 0.
+  - Clean up the generated executables afterwards.
+
+
+# Planned Future work:
+
+1. Rewriting the throwing/catching logic because the way a values is currently read from `setjmp` is not fully spec-adherent (i.e. it relies on undefined behaviour), although all common compilers allow it.
+2. I am currently thinking about adding support to throw any (user supplied) structure rather than just integers.
+
+How does it work? Or: Demystifying the Black Magic:
 ====================================
 
 _For a more gradual introduction to these concepts, read ['Metaprogramming custom control structures in C'](https://www.chiark.greenend.org.uk/%7Esgtatham/mp/) by Simon Tatham, which is really good!_
