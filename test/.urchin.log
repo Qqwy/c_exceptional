@@ -1,5 +1,9 @@
-Running tests at 2018-05-18T10:02:10
-foo passed
+Running tests at 2018-05-18T20:46:49
+nested_try_catch_finally_raise passed
+nested_try_catch_finally_reraise passed
 simple_try_catch passed
+simple_try_catch_finally passed
+simple_try_catch_finally_raise passed
+simple_try_catch_raise passed
 simple_try_finally passed
 simple_try_finally_raise passed

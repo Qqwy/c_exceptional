@@ -5,21 +5,22 @@
 #include "../src/exceptional/exceptional.h"
 
 int main(){
-  printf("-> Simple try/finally with raise\n");
+  printf("-> Simple try/catch/finally with raise\n");
 
   volatile int testvar = 0;
   ++testvar;
   try {
     printf("Inside try\n");
-    ++testvar;
     throw(42);
-    printf("After throw: Should not print");
     assert(false);
+  } catch(err) {
+    printf("Catch: Should be run, thrown error code: %d\n", err);
+    assert(err == 42);
+    ++testvar;
   } finally {
-    printf("Finally: Should be run after try\n");
+    printf("Finally: Should be run after catch\n");
     ++testvar;
   }
-
   ++testvar;
   assert(testvar == 4);
 }

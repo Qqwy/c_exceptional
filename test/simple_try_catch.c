@@ -7,7 +7,7 @@
 int main(){
   printf("-> Simple try/catch without raise\n");
 
-  int testvar = 0;
+  volatile int testvar = 0;
   ++testvar;
   try {
     printf("Inside try\n");

@@ -6,7 +6,7 @@
 int main(){
   printf("-> Simple try/finally without raise\n");
 
-  int testvar = 0;
+  volatile int testvar = 0;
   ++testvar;
   try {
     printf("Inside try\n");
@@ -15,5 +15,6 @@ int main(){
     printf("Finally: Should be run after try\n");
     ++testvar;
   }
-  assert(testvar == 3);
+  ++testvar;
+  assert(testvar == 4);
 }

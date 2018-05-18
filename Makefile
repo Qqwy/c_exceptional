@@ -23,7 +23,7 @@ node_modules/urchin/urchin:
 test: node_modules/urchin/urchin
 	for f in `find ./test/*.c` ; do \
 		target_filename=`dirname $$f`/`basename -s .c $$f` ; \
-		echo $${target_filename} ; \
+		echo Compiling $${target_filename} ; \
 		$(CC) $(CFLAGS) $(DEBUGFLAGS) $(ALL_LIB_SOURCES) $$f -o $${target_filename} ; \
 	done ; \
 	node_modules/urchin/urchin test ; \
