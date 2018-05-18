@@ -1,3 +1,5 @@
-Running tests at 2018-05-17T23:17:36
-example passed
-foo failed
+Running tests at 2018-05-18T10:02:10
+foo passed
+simple_try_catch passed
+simple_try_finally passed
+simple_try_finally_raise passed

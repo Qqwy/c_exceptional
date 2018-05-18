@@ -15,11 +15,16 @@ debug:
 production:
 	$(CC) $(CFLAGS) $(PRODUCTIONFLAGS) $(ALL_SOURCES) -o $(BINARYNAME)
 
+
+node_modules/urchin/urchin:
+	npm install urchin
+
 .PHONY: test
-test:
+test: node_modules/urchin/urchin
 	for f in `find ./test/*.c` ; do \
 		target_filename=`dirname $$f`/`basename -s .c $$f` ; \
 		echo $${target_filename} ; \
 		$(CC) $(CFLAGS) $(DEBUGFLAGS) $(ALL_LIB_SOURCES) $$f -o $${target_filename} ; \
-	done
-	urchin test;
+	done ; \
+	node_modules/urchin/urchin test ; \
+  find ./test/ -type f -executable -exec rm {} + ;
